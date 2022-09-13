@@ -25,10 +25,10 @@ services:
       - "80:80/tcp"
     environment:
       TZ: 'America/Chicago'
-      ADMIN_EMAIL: 'cowboylaserkittenjetshark@gmail.com'
+      #ADMIN_EMAIL: '<admin email>'
       TEMPERATUREUNIT: 'f'
       DHCP_ROUTER: '192.168.86.1'
-      WEBPASSWORD: 'hhuPSN2neSN7cFWpci9ecLXUCZJxiK8scrWmEUEqASGVHn2fUNUd4TgCNZQ6ynZ7f5QY5cmYbW3wvmmgMMX63LVdMr6rQdePVYJYBxzMEkHz8b2hdxZWzqw5mgu9rX6c'
+      #WEBPASSWORD: '<password>'
       ServerIP: '192.168.86.199'
       VIRTUAL_HOST: 'pihole.pi.hole'
 
@@ -43,6 +43,8 @@ services:
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+    env_file:
+      - .env
 
 networks:
   pihole_network:
