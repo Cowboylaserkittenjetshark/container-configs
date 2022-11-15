@@ -75,6 +75,8 @@ services:
       - './homeAssistant/config:/config'
       - '/etc/localtime:/etc/localtime:ro'
         #      - '/etc/letsencrypt/archive/cblkjs.duckdns.org:/config/certs'
+    labels:
+      - swag=enable
     restart: unless-stopped
     privileged: true
 
