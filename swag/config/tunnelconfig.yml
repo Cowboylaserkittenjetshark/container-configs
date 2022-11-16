@@ -1,0 +1,6 @@
+ingress:
+  - hostname: cblkjs.com
+    service: https://cblkjs.com
+  - hostname: "*.cblkjs.com"
+    service: https://cblkjs.com
+  - service: http_status:404

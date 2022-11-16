@@ -1,0 +1,53 @@
+version: '3'
+networks:
+  proxiedNet:
+    name: proxiedNet
+    driver: bridge
+  
+services:
+  swag:
+    image: lscr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - proxiedNet
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      # - URL=<Declare in env_file>
+      - VALIDATION=dns
+      - SUBDOMAINS=wildcard
+      - DNSPLUGIN=cloudflare
+      - DOCKER_MODS=
+        linuxserver/mods:swag-auto-reload|
+        linuxserver/mods:swag-cloudflare-real-ip|
+        linuxserver/mods:swag-dashboard|
+        linuxserver/mods:universal-cloudflared
+      - DOCKER_HOST=dockerproxy
+      # - CF_ZONE_ID=<Declare in env_file>
+      # - CF_ACCOUNT_ID=<Declare in env_file>
+      # - CF_API_TOKEN=<Declare in env_file>
+      - CF_TUNNEL_NAME=swag-tun
+      # - CF_TUNNEL_PASSWORD=<Declare in env_file>
+      - FILE__CF_TUNNEL_CONFIG=/config/tunnelconfig.yml
+    env_file:
+      - .env
+    extra_hosts:
+      - ${URL}:127.0.0.1
+    volumes:
+      - ./config:/config
+    restart: unless-stopped
+  # Needed for swag-auto-proxy
+  # dockerproxy:
+  #   image: ghcr.io/tecnativa/docker-socket-proxy
+  #   container_name: dockerproxy
+  #   networks:
+  #     - proxiedNet
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   environment:
+  #     - CONTAINERS=1
+  #     - POST=0
+  #   restart: unless-stopped

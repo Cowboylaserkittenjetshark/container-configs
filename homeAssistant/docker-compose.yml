@@ -1,0 +1,19 @@
+version: '3'
+networks:
+  proxiedNet:
+    external: true
+
+services:    
+  homeassistant:
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    container_name: homeassistant
+    volumes:
+      - './config:/config'
+      - '/etc/localtime:/etc/localtime:ro'
+    networks:
+      - proxiedNet
+    expose:
+      - 8123
+    ports:
+      - 1400:1400
+    restart: unless-stopped
