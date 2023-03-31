@@ -1,0 +1,6 @@
+ingress:
+  - hostname: example.com
+    service: https://example.com
+  - hostname: "*.example.com"
+    service: https://example.com
+  - service: http_status:404
