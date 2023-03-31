@@ -45,7 +45,7 @@ server:
 
   ## Set the single level path Authelia listens on.
   ## Must be alphanumeric chars and should not contain any slashes.
-  path: ""
+  path: "authelia"
 
   ## Set the path on disk to Authelia assets.
   ## Useful to allow overriding of specific static assets.
