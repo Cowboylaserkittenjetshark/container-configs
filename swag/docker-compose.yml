@@ -26,10 +26,10 @@ services:
         linuxserver/mods:swag-dashboard|
         linuxserver/mods:universal-cloudflared
       - DOCKER_HOST=dockerproxy
+      - CF_TUNNEL_NAME=swag-tun
       # - CF_ZONE_ID=<Declare in env_file>
       # - CF_ACCOUNT_ID=<Declare in env_file>
       # - CF_API_TOKEN=<Declare in env_file>
-      - CF_TUNNEL_NAME=swag-tun
       # - CF_TUNNEL_PASSWORD=<Declare in env_file>
       - FILE__CF_TUNNEL_CONFIG=/config/tunnelconfig.yml
     env_file:
