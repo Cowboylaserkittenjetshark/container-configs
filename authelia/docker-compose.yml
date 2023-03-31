@@ -14,6 +14,8 @@ services:
     environment:
       AUTHELIA_JWT_SECRET_FILE: /config/secrets/jwt_secret
       AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /config/secrets/storage_encryption_key
+    env_file:
+      - .env
     volumes:
       - ./config:/config
     networks:
