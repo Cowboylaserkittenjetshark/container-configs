@@ -1,4 +1,8 @@
-version: "2"
+version: '3'
+networks:
+  ipvlan-net:
+    external: true
+    
 
 # https://github.com/pi-hole/docker-pi-hole/blob/master/README.md
 
@@ -8,13 +12,6 @@ services:
     image: pihole/pihole:latest
     hostname: pihole
     domainname: pi.hole
-    mac_address: d0:ca:ab:cd:ef:01
-    networks:
-      pihole_network:
-        ipv4_address: 192.168.86.199
-    dns:
-      - 127.0.0.1
-      - 9.9.9.9
 
 # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
@@ -23,14 +20,11 @@ services:
       - "5353/udp"
       - "67:67/udp"
       - "80:80/tcp"
+    networks:
+      ipvlan-net:
+        ipv4_address: 192.168.86.199
     environment:
       TZ: 'America/Chicago'
-      #ADMIN_EMAIL: '<admin email>'
-      TEMPERATUREUNIT: 'f'
-      DHCP_ROUTER: '192.168.86.1'
-      #WEBPASSWORD: '<password>'
-      ServerIP: '192.168.86.199'
-      VIRTUAL_HOST: 'pihole.pi.hole'
 
 # Volumes store your data between container upgrades
     volumes:
@@ -45,14 +39,3 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-
-networks:
-  pihole_network:
-    driver: macvlan
-    driver_opts:
-      parent: enp34s0
-    ipam:
-      config:
-        - subnet: "192.168.86.0/24"
-          gateway: "192.168.86.1"
-          ip_range: "192.168.86.238/28"
