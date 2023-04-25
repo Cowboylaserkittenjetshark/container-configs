@@ -91,6 +91,9 @@ server:
 
     ## Write buffer.
     # write: 4096
+  buffers:
+    read: 8192
+    write: 8192
 
   ## Server Timeouts configuration.
   # timeouts:
