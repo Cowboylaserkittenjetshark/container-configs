@@ -1,0 +1,17 @@
+networks:
+  database:
+    name: database
+    driver: bridge
+
+services:
+  db:
+    image: docker.io/library/postgres:alpine
+    container_name: db
+    networks:
+      - database
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    env_file: .env
+    restart: unless-stopped
