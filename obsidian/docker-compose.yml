@@ -16,6 +16,4 @@ services:
       - ./config:/config
     networks:
       - proxiedNet
-    expose:
-      - 3000
     restart: unless-stopped

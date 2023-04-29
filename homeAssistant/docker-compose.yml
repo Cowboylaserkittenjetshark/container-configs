@@ -12,8 +12,4 @@ services:
       - '/etc/localtime:/etc/localtime:ro'
     networks:
       - proxiedNet
-    expose:
-      - 8123
-    ports:
-      - 1400:1400
     restart: unless-stopped
