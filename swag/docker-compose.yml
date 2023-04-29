@@ -26,7 +26,6 @@ services:
         linuxserver/mods:swag-auto-reload|
         linuxserver/mods:swag-cloudflare-real-ip|
         linuxserver/mods:swag-dashboard
-      - DOCKER_HOST=dockerproxy
     env_file:
       - .env
     extra_hosts:
@@ -34,15 +33,3 @@ services:
     volumes:
       - ./config:/config
     restart: unless-stopped
-  # Needed for swag-auto-proxy
-  # dockerproxy:
-  #   image: ghcr.io/tecnativa/docker-socket-proxy
-  #   container_name: dockerproxy
-  #   networks:
-  #     - proxiedNet
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #   environment:
-  #     - CONTAINERS=1
-  #     - POST=0
-  #   restart: unless-stopped
