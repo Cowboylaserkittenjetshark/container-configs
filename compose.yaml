@@ -5,6 +5,9 @@ networks:
   database:
     name: database
     driver: bridge
+  mqtt:
+    name: mqtt
+    driver: bridge
 
 secrets:
   jwt_secret:
@@ -107,6 +110,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - proxy
+      - mqtt
     restart: unless-stopped
 
   eclipse-mosquitto:
@@ -117,7 +121,7 @@ services:
       - ./mosquitto/data/:/mosquitto/data/
       - ./mosquitto/log/:/mosquitto/log/
     networks:
-      - proxy
+      - mqtt
     ports:
       - 1883:1883
       - 9001:9001
