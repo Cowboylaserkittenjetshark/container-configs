@@ -60,6 +60,9 @@ services:
     env_file: ./vaultwarden/environment
     volumes:
       - ./vaultwarden/vw-data/:/data
+    depends_on:
+      - swag
+      - db
     restart: unless-stopped
 
   authelia:
@@ -88,6 +91,9 @@ services:
     networks:
       - proxy
       - database
+    depends_on:
+      - swag
+      - db
     restart: unless-stopped
 
   db:
@@ -111,9 +117,12 @@ services:
     networks:
       - proxy
       - mqtt
+    depends_on:
+      - swag
+      - mosquitto
     restart: unless-stopped
 
-  eclipse-mosquitto:
+  mosquitto:
     image: eclipse-mosquitto:latest
     container_name: mosquitto
     volumes:
