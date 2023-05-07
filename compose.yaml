@@ -41,7 +41,7 @@ services:
         linuxserver/mods:swag-cloudflare-real-ip|
         linuxserver/mods:swag-dashboard
     env_file:
-      - ./swag/.env
+      - ./swag/environment
     volumes:
       - ./swag/config/:/config
     restart: unless-stopped
@@ -54,7 +54,7 @@ services:
       - database
     environment:
       - WEBSOCKET_ENABLED="true"
-    env_file: ./vaultwarden/.env
+    env_file: ./vaultwarden/environment
     volumes:
       - ./vaultwarden/vw-data/:/data
     restart: unless-stopped
@@ -79,7 +79,7 @@ services:
       AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: /run/secrets/storage_postgress_password
       AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE: /run/secrets/hmac_secret
       AUTHELIA_IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE: /run/secrets/issuer_private_key
-    env_file: ./authelia/.env
+    env_file: ./authelia/environment
     volumes:
       - ./authelia/config/:/config
     networks:
@@ -96,7 +96,7 @@ services:
       - 5432:5432
     volumes:
       - ./postgres/data/:/var/lib/postgresql/data
-    env_file: ./postgres/.env
+    env_file: ./postgres/environment
     restart: unless-stopped
 
   homeassistant:
