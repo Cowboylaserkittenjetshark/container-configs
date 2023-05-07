@@ -1,0 +1,126 @@
+networks:
+  proxy:
+    name: proxy
+    driver: bridge
+  database:
+    name: database
+    driver: bridge
+
+secrets:
+  jwt_secret:
+    file: ./authelia/secrets/jwt_secret
+  storage_encryption_key:
+    file: ./authelia/secrets/storage_encryption_key
+  storage_postgress_password:
+    file: ./authelia/secrets/postgresql_password
+  hmac_secret:
+    file: ./authelia/secrets/oidc/hmac_secret
+  issuer_private_key:
+    file: ./authelia/secrets/oidc/keys/private.pem
+  
+services:
+  swag:
+    image: lscr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - proxy
+    ports:
+      - 443:443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      # - URL=<Declare in env_file>
+      - VALIDATION=dns
+      - SUBDOMAINS=wildcard
+      - DNSPLUGIN=cloudflare
+      - DOCKER_MODS=
+        linuxserver/mods:swag-auto-reload|
+        linuxserver/mods:swag-cloudflare-real-ip|
+        linuxserver/mods:swag-dashboard
+    env_file:
+      - ./swag/.env
+    extra_hosts:
+      - $URL:127.0.0.1
+    volumes:
+      - ./swag/config/:/config
+    restart: unless-stopped
+
+  vaultwarden:
+    image: vaultwarden/server:alpine
+    container_name: vaultwarden
+    networks:
+      - proxy
+      - database
+    environment:
+      - WEBSOCKET_ENABLED="true"
+    env_file: ./vaultwarden/.env
+    volumes:
+      - ./vaultwarden/vw-data/:/data
+    restart: unless-stopped
+
+  authelia:
+    image: docker.io/authelia/authelia:latest
+    container_name: authelia
+    command:
+      - "authelia"
+      - "--config=/config/configuration.yml"
+      - "--config=/config/configuration.acl.yml"
+      - "--config=/config/configuration.identity_providers.yml"
+    secrets:
+      - jwt_secret
+      - storage_encryption_key
+      - storage_postgress_password
+      - hmac_secret
+      - issuer_private_key
+    environment:
+      AUTHELIA_JWT_SECRET_FILE: /run/secrets/jwt_secret
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /run/secrets/storage_encryption_key
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: /run/secrets/storage_postgress_password
+      AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE: /run/secrets/hmac_secret
+      AUTHELIA_IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE: /run/secrets/issuer_private_key
+    env_file: ./authelia/.env
+    volumes:
+      - ./authelia/config/:/config
+    networks:
+      - proxy
+      - database
+    restart: unless-stopped
+
+  db:
+    image: docker.io/library/postgres:alpine
+    container_name: db
+    networks:
+      - database
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/data/:/var/lib/postgresql/data
+    env_file: ./postgres/.env
+    restart: unless-stopped
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    volumes:
+      - ./homeAssistant/config/:/config
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  eclipse-mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/data/:/mosquitto/data/
+      - ./mosquitto/log/:/mosquitto/log/
+    networks:
+      - proxy
+    ports:
+      - 1883:1883
+      - 9001:9001
+    restart: unless-stopped
