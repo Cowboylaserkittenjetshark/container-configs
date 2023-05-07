@@ -42,8 +42,6 @@ services:
         linuxserver/mods:swag-dashboard
     env_file:
       - ./swag/.env
-    extra_hosts:
-      - $URL:127.0.0.1
     volumes:
       - ./swag/config/:/config
     restart: unless-stopped
