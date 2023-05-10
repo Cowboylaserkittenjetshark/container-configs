@@ -8,6 +8,9 @@ networks:
   mqtt:
     name: mqtt
     driver: bridge
+  nextcloud-cache:
+    name: nextcloud-cache
+    driver: bridge
 
 secrets:
   jwt_secret:
@@ -33,6 +36,7 @@ services:
       - 443:443
     volumes:
       - ./swag/config/:/config
+      - ./nextcloud/html/:/config/sites/nextcloud/www/html/:z,ro
     env_file: ./swag/environment
     environment:
       - PUID=1000
@@ -45,6 +49,16 @@ services:
         linuxserver/mods:swag-auto-reload|
         linuxserver/mods:swag-cloudflare-real-ip|
         linuxserver/mods:swag-dashboard
+    restart: unless-stopped
+
+  db:
+    image: docker.io/library/postgres:alpine
+    container_name: db
+    networks:
+      - database
+    volumes:
+      - ./postgres/data/:/var/lib/postgresql/data
+    env_file: ./postgres/environment
     restart: unless-stopped
 
   vaultwarden:
@@ -94,16 +108,6 @@ services:
       AUTHELIA_IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE: /run/secrets/issuer_private_key
     restart: unless-stopped
 
-  db:
-    image: docker.io/library/postgres:alpine
-    container_name: db
-    networks:
-      - database
-    volumes:
-      - ./postgres/data/:/var/lib/postgresql/data
-    env_file: ./postgres/environment
-    restart: unless-stopped
-
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:stable
     container_name: homeassistant
@@ -131,3 +135,29 @@ services:
       - ./mosquitto/data/:/mosquitto/data/
       - ./mosquitto/log/:/mosquitto/log/
     restart: unless-stopped
+
+  nextcloud:
+    image: docker.io/library/nextcloud:fpm-alpine
+    container_name: nextcloud
+    volumes:
+      - ./nextcloud/html/:/var/www/html/
+      - ./nextcloud/data/:/var/lib/nextcloud/data/
+    networks:
+      - proxy
+      - database
+      - nextcloud-cache
+    depends_on:
+      - swag
+      - db
+      - nextcloud-cache
+    environment:
+      - REDIS_HOST=nextcloud-cache
+    restart: unless-stopped
+
+  nextcloud-cache:
+    image: docker.io/library/redis:alpine
+    container_name: nextcloud-cache
+    networks:
+      - nextcloud-cache
+    restart: unless-stopped
+
