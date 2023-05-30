@@ -994,17 +994,17 @@ storage:
 ##
 ## Notifications are sent to users when they require a password reset, a Webauthn registration or a TOTP registration.
 ## The available providers are: filesystem, smtp. You must use only one of these providers.
-notifier:
-  ## You can disable the notifier startup check by setting this to true.
-  disable_startup_check: false
+# notifier:
+#   ## You can disable the notifier startup check by setting this to true.
+#   disable_startup_check: false
 
-  ##
-  ## File System (Notification Provider)
-  ##
-  ## Important: Kubernetes (or HA) users must read https://www.authelia.com/t/statelessness
-  ##
-  filesystem:
-    filename: /config/notification.txt
+#   ##
+#   ## File System (Notification Provider)
+#   ##
+#   ## Important: Kubernetes (or HA) users must read https://www.authelia.com/t/statelessness
+#   ##
+#   filesystem:
+#     filename: /config/notification.txt
 
   ##
   ## SMTP (Notification Provider)
