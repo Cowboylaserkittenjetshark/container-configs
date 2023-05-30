@@ -12,6 +12,22 @@ networks:
     name: nextcloud-cache
     driver: bridge
 
+volumes:
+  postgres-data:
+    name: postgres-data
+  vaultwarden-data:
+    name: vaultwarden-data
+  nextcloud-data:
+    name: nextcloud-data
+  nextcloud-html:
+    name: nextcloud-html
+  homeassistant-config:
+    name: homeassistant-config
+  mosquitto-data:
+    name: mosquitto-data
+  mosquitto-log:
+    name: mosquitto-log
+
 secrets:
   jwt_secret:
     file: ./authelia/secrets/jwt_secret
@@ -38,7 +54,7 @@ services:
       - 443:443
     volumes:
       - ./swag/config/:/config
-      - ./nextcloud/html/:/config/sites/nextcloud/www/html/:z,ro
+      - nextcloud-html:/config/sites/nextcloud/www/html/:z,ro
     env_file: ./swag/environment
     environment:
       - PUID=1000
@@ -59,7 +75,7 @@ services:
     networks:
       - database
     volumes:
-      - ./postgres/data/:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     env_file: ./postgres/environment
     restart: unless-stopped
 
@@ -70,7 +86,7 @@ services:
       - proxy
       - database
     volumes:
-      - ./vaultwarden/vw-data/:/data
+      - vaultwarden-data:/data
     depends_on:
       - swag
       - db
@@ -120,7 +136,7 @@ services:
       - proxy
       - mqtt
     volumes:
-      - ./homeAssistant/config/:/config
+      - homeassistant-config:/config
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - swag
@@ -137,16 +153,16 @@ services:
       - 9001:9001
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./mosquitto/data/:/mosquitto/data/
-      - ./mosquitto/log/:/mosquitto/log/
+      - mosquitto-data:/mosquitto/data/
+      - mosquitto-log:/mosquitto/log/
     restart: unless-stopped
 
   nextcloud:
     image: docker.io/library/nextcloud:fpm-alpine
     container_name: nextcloud
     volumes:
-      - ./nextcloud/html/:/var/www/html/
-      - ./nextcloud/data/:/var/lib/nextcloud/data/
+      - nextcloud-html:/var/www/html/
+      - nextcloud-data:/var/lib/nextcloud/data/
     networks:
       - proxy
       - database
