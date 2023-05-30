@@ -1,3 +1,6 @@
 # shellcheck disable=all
 AUTHELIA_DEFAULT_REDIRECTION_URL=https://example.com
 AUTHELIA_SESSION_DOMAIN=example.com
+## SMTP notifier
+AUTHELIA_NOTIFIER_SMTP_USERNAME=example@gmail.com
+AUTHELIA_NOTIFIER_SMTP_SENDER=Authelia authelia@example.com

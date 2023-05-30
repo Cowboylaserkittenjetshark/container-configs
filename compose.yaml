@@ -23,6 +23,8 @@ secrets:
     file: ./authelia/secrets/oidc/hmac_secret
   issuer_private_key:
     file: ./authelia/secrets/oidc/keys/private.pem
+  notifier_smtp_password:
+    file: ./authelia/secrets/notifier/smtp/password
   
 services:
   swag:
@@ -93,12 +95,14 @@ services:
       - "--config=/config/configuration.yml"
       - "--config=/config/configuration.acl.yml"
       - "--config=/config/configuration.identity_providers.yml"
+      - "--config=/config/configuration.notifier.yml"
     secrets:
       - jwt_secret
       - storage_encryption_key
       - storage_postgress_password
       - hmac_secret
       - issuer_private_key
+      - notifier_smtp_password
     env_file: ./authelia/environment
     environment:
       AUTHELIA_JWT_SECRET_FILE: /run/secrets/jwt_secret
@@ -106,6 +110,7 @@ services:
       AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: /run/secrets/storage_postgress_password
       AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE: /run/secrets/hmac_secret
       AUTHELIA_IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE: /run/secrets/issuer_private_key
+      AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE: /run/secrets/notifier_smtp_password
     restart: unless-stopped
 
   homeassistant:
